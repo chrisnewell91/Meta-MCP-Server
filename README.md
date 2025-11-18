@@ -74,21 +74,38 @@ A powerful Model Context Protocol (MCP) server that can dynamically create and m
 ### Prerequisites
 
 - Python 3.9 or higher
-- MCP Python SDK
+- pip (Python package manager)
 
-### Setup
+### Install from Source (Current Method)
 
-1. Install the MCP SDK:
 ```bash
-pip install mcp
+# Clone the repository
+git clone https://github.com/qSpark-tech/Meta-MCP_Server.git
+cd Meta-MCP_Server
+
+# Install in development mode
+pip install -e .
+
+# Or install directly
+pip install .
 ```
 
-2. Clone or download the Meta-MCP server:
+### Install from Package (Future)
+
+Once published to PyPI:
 ```bash
-# Download the meta_mcp_server.py file
+pip install meta-mcp-server
 ```
 
-3. Configure your AI client (Claude Desktop, etc.):
+### Quick Test
+
+After installation, verify it works:
+```bash
+meta-mcp-server --version
+# Output: Meta MCP Server v2.0.0
+```
+
+### Configure your AI client (Claude Desktop, etc.):
 
 Add to your MCP configuration file:
 
@@ -99,11 +116,27 @@ Add to your MCP configuration file:
 ```json
 {
   "mcpServers": {
-    "meta-mcp-orchestrator": {
-      "command": "python",
-      "args": ["/path/to/meta_mcp_server.py"],
+    "meta-mcp": {
+      "command": "meta-mcp-server",
+      "args": [],
       "env": {
-        "LOG_LEVEL": "INFO"
+        "MCP_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+Or if running from source:
+```json
+{
+  "mcpServers": {
+    "meta-mcp": {
+      "command": "python",
+      "args": ["-m", "meta_mcp_server"],
+      "cwd": "/path/to/Meta-MCP_Server",
+      "env": {
+        "MCP_LOG_LEVEL": "INFO"
       }
     }
   }
@@ -492,9 +525,9 @@ See [CHANGELOG.md](CHANGELOG.md) for known limitations and future plans.
 
 📚 **Documentation**
 - [Full Changelog](CHANGELOG.md) - What's new in v2.0
-- [Quick Start Guide](QUICK_START_V2.md) - Get started with v2.0
-- [Examples](examples_v2.py) - Run examples: `python examples_v2.py`
-- [Tests](test_meta_mcp_v2.py) - Run tests: `python test_meta_mcp_v2.py`
+- [Quick Start Guide](docs/QUICK_START_V2.md) - Get started with v2.0
+- [Examples](examples/) - See example usage and tutorials
+- [Tests](tests/) - Run tests: `pytest`
 
 ⚙️ **Configuration**
 - [Config Template](meta_mcp_config.json) - Configuration options
@@ -513,9 +546,100 @@ See [CHANGELOG.md](CHANGELOG.md) for known limitations and future plans.
 - **v2.0** (November 2025): Security, performance, monitoring, events
 - **v1.0** (Initial): Basic server orchestration and management
 
+## Development
+
+### Setting up Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/qSpark-tech/Meta-MCP_Server.git
+cd Meta-MCP_Server
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in development mode with dev dependencies
+pip install -e ".[dev,test]"
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=meta_mcp_server --cov-report=html
+
+# Run specific test file
+pytest tests/test_server.py
+```
+
+### Code Quality
+
+```bash
+# Run linting
+ruff check meta_mcp_server tests
+
+# Run type checking
+mypy meta_mcp_server
+
+# Format code
+ruff format meta_mcp_server tests
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Please ensure:
+- All tests pass
+- Code follows the project style (ruff)
+- New features include tests
+- Documentation is updated
+
+## Roadmap
+
+### Near-term (v2.1-v2.5)
+- [ ] **Complete v2.0 Features**: Implement documented but missing features (pooling, health checks)
+- [ ] **PyPI Publishing**: Publish package to PyPI for easy installation
+- [ ] **Enhanced Templates**: More built-in server templates (database, ML, image processing)
+- [ ] **GUI Dashboard**: Web-based monitoring and control interface
+- [ ] **Performance Metrics**: Detailed performance tracking and optimization
+
+### Medium-term (v3.0)
+- [ ] **HTTP Transport**: Support for HTTP-based MCP transport
+- [ ] **Template Registry**: Online registry for sharing server templates
+- [ ] **Advanced Orchestration**: DAG-based workflow execution
+- [ ] **Resource Management**: CPU/GPU allocation and scheduling
+- [ ] **Multi-language Support**: JavaScript/TypeScript server support
+
+### Long-term Vision
+- [ ] **Distributed Execution**: Run servers across multiple machines
+- [ ] **Cloud Integration**: Deploy servers to cloud platforms
+- [ ] **Security Framework**: Enhanced sandboxing and permission system
+- [ ] **Plugin System**: Extensible architecture for custom features
+- [ ] **Enterprise Features**: Audit logs, compliance, monitoring
+
+### Community Contributions Welcome!
+We're especially looking for help with:
+- Additional server templates
+- Testing on different platforms
+- Documentation improvements
+- Integration examples
+
 ## License
 
 MIT License - See LICENSE file for details
+
+## Author
+
+**Chris Newell** - *Initial work*
 
 ## Acknowledgments
 

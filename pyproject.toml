@@ -1,0 +1,112 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meta-mcp-server"
+version = "2.0.0"
+authors = [
+  { name="Chris Newell", email="" },
+]
+description = "A Dynamic MCP Server Orchestrator - Meta server that can spawn and orchestrate child MCP servers"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Distributed Computing",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["mcp", "ai", "llm", "orchestration", "server", "claude", "anthropic"]
+
+dependencies = [
+    "mcp>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+]
+
+# Optional dependencies for enhanced server templates
+web = [
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+]
+
+data = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/qSpark-tech/Meta-MCP_Server"
+"Bug Tracker" = "https://github.com/qSpark-tech/Meta-MCP_Server/issues"
+"Documentation" = "https://github.com/qSpark-tech/Meta-MCP_Server/blob/main/README.md"
+"Changelog" = "https://github.com/qSpark-tech/Meta-MCP_Server/blob/main/CHANGELOG.md"
+
+[project.scripts]
+meta-mcp-server = "meta_mcp_server.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["meta_mcp_server*"]
+exclude = ["tests*"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = [
+    "tests",
+]
+pythonpath = ["."]
+asyncio_mode = "auto"
