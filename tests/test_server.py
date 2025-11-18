@@ -11,13 +11,14 @@ Tests all v2.0 improvements:
 
 Run: python test_meta_mcp_v2.py
 """
+from __future__ import annotations
 
 import asyncio
 import json
 import time
 from contextlib import AsyncExitStack
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import ClientSession, StdioServerParameters  # type: ignore[import]
+from mcp.client.stdio import stdio_client  # type: ignore[import]
 
 
 class TestMetaMCPServer:
@@ -34,8 +35,8 @@ class TestMetaMCPServer:
     async def connect(self):
         """Connect to Meta-MCP Server"""
         server_params = StdioServerParameters(
-            command="python3",
-            args=[self.server_script_path]
+            command=self.server_script_path,
+            args=[]
         )
 
         self.exit_stack = AsyncExitStack()
@@ -541,7 +542,7 @@ class TestMetaMCPServer:
 
 async def run_tests():
     """Main test runner"""
-    test_suite = TestMetaMCPServer("./meta_mcp_server.py")
+        test_suite = TestMetaMCPServer("meta-mcp-server")
     await test_suite.run_all_tests()
 
 
