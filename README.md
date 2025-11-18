@@ -1,5 +1,8 @@
 # Meta-MCP Server: Dynamic MCP Server Orchestrator
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
 **Version 2.0** | [Changelog](CHANGELOG.md) | [Quick Start](QUICK_START_V2.md) | [Examples](examples_v2.py)
 
 A powerful Model Context Protocol (MCP) server that can dynamically create and manage child MCP servers to accomplish complex tasks locally. This meta-server acts as an orchestrator, spawning specialized servers on-demand and coordinating their execution.
