@@ -1,0 +1,36 @@
+# Meta-MCP Server Requirements
+
+# Core MCP SDK (Required)
+mcp>=1.0.0
+
+# Python Standard Library Dependencies (Built-in)
+# - asyncio: Async/await support
+# - json: JSON parsing
+# - uuid: Unique ID generation
+# - logging: Logging framework
+# - tempfile: Cross-platform temp directories
+# - os: Operating system interface
+# - pathlib: Object-oriented filesystem paths
+# - datetime: Date and time handling
+# - contextlib: Context management
+# - dataclasses: Data classes
+# - enum: Enumerations
+# - collections: Specialized container datatypes
+# - typing: Type hints
+
+# Optional dependencies for enhanced server templates
+# Uncomment as needed:
+
+# For web scraping template
+# requests>=2.31.0
+# beautifulsoup4>=4.12.0
+
+# For advanced data processing
+# pandas>=2.0.0
+# numpy>=1.24.0
+
+# For async improvements
+# aiohttp>=3.9.0
+
+# For system monitoring (optional, for future enhancements)
+# psutil>=5.9.0

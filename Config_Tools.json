@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "meta-mcp-orchestrator": {
+      "command": "python",
+      "args": ["/absolute/path/to/meta_mcp_server.py"],
+      "env": {
+        "LOG_LEVEL": "INFO",
+        "MAX_SERVERS": "10",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

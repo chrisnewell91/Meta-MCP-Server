@@ -1,0 +1,22 @@
+{
+  "default_timeout_seconds": 30,
+  "default_max_memory_mb": 512,
+  "max_concurrent_servers": 10,
+  "default_python_command": "python3",
+  "allowed_commands": [
+    "python",
+    "python3",
+    "python3.9",
+    "python3.10",
+    "python3.11",
+    "python3.12",
+    "python3.13",
+    "python3.14",
+    "node",
+    "npm",
+    "npx"
+  ],
+  "temp_directory": null,
+  "log_level": "INFO"
+}
+
