@@ -542,7 +542,7 @@ class TestMetaMCPServer:
 
 async def run_tests():
     """Main test runner"""
-        test_suite = TestMetaMCPServer("meta-mcp-server")
+    test_suite = TestMetaMCPServer("meta-mcp-server")
     await test_suite.run_all_tests()
 
 
