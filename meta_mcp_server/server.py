@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import uuid
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Awaitable, Callable, Dict, List, Optional
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP  # type: ignore[import]
@@ -114,8 +114,11 @@ class MetaMCPServer:
                 "config": server_config,
                 "process": child_server,
                 "created_at": child_server.created_at.isoformat(),
-                "status": child_server.status
+                "status": child_server.status,
+                "template": template
             }
+
+            self.server_pool.register_server(server_id, template)
 
             # Record event
             self.health_monitor.record_event(
@@ -163,17 +166,18 @@ class MetaMCPServer:
 
         child_server = self.server_registry[server_id]["process"]
 
+        response: Dict[str, Any]
         try:
             result = await child_server.execute_tool(tool_name, arguments)
-            
+
             # Record event
             self.health_monitor.record_event(
                 "tool_executed",
                 server_id,
                 {"tool": tool_name, "success": True}
             )
-            
-            return {
+
+            response = {
                 "server_id": server_id,
                 "tool": tool_name,
                 "result": result,
@@ -181,20 +185,28 @@ class MetaMCPServer:
             }
         except Exception as e:
             logger.error(f"Execution error on {server_id}: {e}")
-            
+
             # Record failure event
             self.health_monitor.record_event(
                 "tool_executed",
                 server_id,
                 {"tool": tool_name, "success": False, "error": str(e)}
             )
-            
-            return {
+
+            response = {
                 "server_id": server_id,
                 "tool": tool_name,
                 "error": str(e),
                 "status": "error"
             }
+        finally:
+            if server_id in self.server_registry:
+                self.server_pool.mark_server_idle(server_id)
+                await self.server_pool.cleanup_idle_servers(
+                    stop_callback=self._stop_server_for_pool
+                )
+
+        return response
 
     async def list_servers(self) -> List[Dict[str, Any]]:
         """
@@ -266,6 +278,7 @@ class MetaMCPServer:
         try:
             await child_server.stop()
             del self.server_registry[server_id]
+            self.server_pool.remove_server(server_id)
             
             # Record event
             self.health_monitor.record_event(
@@ -322,6 +335,13 @@ class MetaMCPServer:
                 )
                 if result.get("status") == "created and running":
                     spawned_servers.append(result["server_id"])
+
+            for server_id in spawned_servers:
+                self.server_pool.mark_server_idle(server_id)
+
+            await self.server_pool.cleanup_idle_servers(
+                stop_callback=self._stop_server_for_pool
+            )
 
             return {
                 "task_id": task_id,
@@ -384,16 +404,28 @@ class MetaMCPServer:
     # V2.0 Tool Stubs (not yet implemented)
     
     async def get_or_create_pooled_server(
-        self, 
-        template: str, 
+        self,
+        template: str,
         use_pooling: bool = True
     ) -> Dict[str, Any]:
         """
         Get or create a pooled server for better performance
-        
+
         Note: This feature is documented but not yet implemented
         """
-        result = await self.server_pool.get_or_create_server(template, use_pooling)
+        async def _create_server_from_template() -> Dict[str, Any]:
+            return await self.create_server(
+                name=f"pooled_{template}_{uuid.uuid4().hex[:8]}",
+                server_type="python",
+                template=template,
+            )
+
+        result = await self.server_pool.get_or_create_server(
+            template=template,
+            use_pooling=use_pooling,
+            create_server=_create_server_from_template,
+            stop_callback=self._stop_server_for_pool,
+        )
         return result
     
     async def health_check(self, server_id: str) -> Dict[str, Any]:
@@ -426,3 +458,10 @@ class MetaMCPServer:
         """Run the Meta MCP Server"""
         logger.info("Starting Meta-MCP Server")
         self.mcp.run(transport=transport)
+
+    async def _stop_server_for_pool(self, server_id: str) -> None:
+        """Stop a server during pool cleanup"""
+        if server_id in self.server_registry:
+            await self.stop_server(server_id)
+        else:
+            self.server_pool.remove_server(server_id)
